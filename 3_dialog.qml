@@ -64,7 +64,6 @@ Window {
 
         onDoubleClicked: {
                 msgDialog.openMsg();
-            console.log("doubleClicked , doubleClicked , doubleClicked ！")
                }
         onPositionChanged: {
             if(Screen.width!=gridLayoutWindow.width)

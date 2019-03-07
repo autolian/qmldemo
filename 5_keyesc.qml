@@ -12,7 +12,7 @@ Window {
     height: Screen.height + 1
     flags: Qt.FramelessWindowHint
     property int clickNum: 0
-
+    property string keydown: "once"
     Timer{
         id: clickTimer
         //超过300ms还没有触发第二次点击证明时单击（并不一定非要用300ms延时，不过300ms是经典延时时间）
@@ -23,17 +23,6 @@ Window {
             console.log("clicked, clicked, clicked")
         }
     }
-    focus: true
-    Keys.enabled: true;
-    Keys.onPressed: {
-         msgDialog.openMsg("key");
-              switch(event.key)
-              {
-              case Qt.Key_Escape:
-                   msgDialog.openMsg("esc");
-                  break;
-              }
-    }
 
     GridLayout{
            id: gridLayout1
@@ -43,6 +32,24 @@ Window {
            anchors.margins: 0;
            columnSpacing: 0;
            rowSpacing: 0;
+           focus: true
+           Keys.enabled: true;
+           Keys.onPressed: {
+
+                     switch(event.key)
+                     {
+                     case Qt.Key_Escape:
+                          //msgDialog.openMsg("esc");
+                         if(((gridLayoutWindow.width==Screen.width)&&(gridLayoutWindow.height=Screen.height+1)))
+                         {
+                             gridLayoutWindow.width=Screen.width/2
+                             gridLayoutWindow.height=Screen.height/3
+                             gridLayoutWindow.x = (Screen.width - gridLayoutWindow.width) * 0.5
+                                     gridLayoutWindow.y = (Screen.height - gridLayoutWindow.height) * 0.5
+                         }
+                         break;
+                     }
+           }
 
            Rectangle{
                id:rect00;
@@ -80,31 +87,69 @@ Window {
         property int mx: 0
         property int my: 0
         onPressed: {
-            console.log("点击事件")
+            console.log("onPressed")
             mx=mouseX
             my=mouseY
 
             clickNum ++
            if(clickNum == 1)
            {
+               keydown="once";
                clickTimer.start()
            }
            if(clickNum == 2)
            {
+                keydown="double";
                clickNum = 0
                clickTimer.stop()
-               msgDialog.openMsg("double");
-               console.log("doubleClicked, doubleClicked,doubleClicked")
+               if(((gridLayoutWindow.width==Screen.width)&&(gridLayoutWindow.height=Screen.height+1)))
+                {
+
+                    gridLayoutWindow.width=Screen.width/2
+                    gridLayoutWindow.height=Screen.height/3
+                   gridLayoutWindow.x = (Screen.width - gridLayoutWindow.width) * 0.5
+                    gridLayoutWindow.y = (Screen.height - gridLayoutWindow.height) * 0.5
+                }
+                else
+                {
+
+                    gridLayoutWindow.width=Screen.width
+                    gridLayoutWindow.height=Screen.height+1
+                   gridLayoutWindow.x = 0
+                    gridLayoutWindow.y = 0
+                }
+              // msgDialog.openMsg("double");
+              // console.log("doubleClicked, doubleClicked,doubleClicked")
            }
 
         }
 
         onPositionChanged: {
+
+        //    if(!((gridLayoutWindow.x == (Screen.width - gridLayoutWindow.width) * 0.5)&&
+         //           ( gridLayoutWindow.y = (Screen.height - gridLayoutWindow.height) * 0.5)))
+
+            if(keydown!="double")
+            {
+                if((gridLayoutWindow.width == Screen.width)&&(gridLayoutWindow.height == Screen.height+1))
+                {
+                    gridLayoutWindow.x=0
+                    gridLayoutWindow.y=0
+                }
+                else
+                {
+                    gridLayoutWindow.x+=mouseX-mx
+                    gridLayoutWindow.y+=mouseY-my
+                }
+
+
+            }
+            /*
             if(Screen.width!=gridLayoutWindow.width)
             {
                 gridLayoutWindow.x+=mouseX-mx
                 gridLayoutWindow.y+=mouseY-my
-            }
+            }*/
 
         }
     }
